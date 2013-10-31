@@ -1,6 +1,5 @@
 (function ( $ ) {
 $.fn.Jtube = function( options ) {
-	var YT = null;
 	/*
 		version 0.1 of J-tube
 		by Bohdan Anderson @ Also Collective
@@ -48,7 +47,7 @@ $.fn.Jtube = function( options ) {
 	}, options );
 
 	if(settings.skipWhash){
-		var hash = window.location.hash
+		var hash = window.location.hash;
 		if(hash.length>0){
 			settings.cancle = true;
 			removeVideo({data:0,target:{a:settings.iframeEl}});
@@ -57,14 +56,14 @@ $.fn.Jtube = function( options ) {
 	}
 	if(settings.loadingDiv){
 		settings.winW = $(window).width();
-		settings.winH = ($(window).height())
+		settings.winH = ($(window).height());
 		settings.loadingEl = document.createElement('img');
 		settings.loadingEl.src = settings.loadingGif;
 		settings.loadingEl.id = "yt-loading-element";
 		settings.loadingEl.onload = function(){
-			$(settings.loadingEl).css({left:(settings.winW/2)-(settings.loadingEl.width/2),top:(settings.winH/2)-(settings.loadingEl.height/2)})
+			$(settings.loadingEl).css({left:(settings.winW/2)-(settings.loadingEl.width/2),top:(settings.winH/2)-(settings.loadingEl.height/2)});
 			document.body.appendChild(settings.loadingEl);
-		}
+		};
 	}
 	if(settings.skipvid){
 		settings.bottomNav = document.createElement('a');
@@ -73,11 +72,11 @@ $.fn.Jtube = function( options ) {
 		settings.skipvidEl = document.createElement('div');
 		settings.skipvidEl.id= "yt-skip-video-button";
 		settings.skipvidEl.innerHTML = settings.skipvidText;
-		settings.bottomNav.appendChild(settings.skipvidEl)
+		settings.bottomNav.appendChild(settings.skipvidEl);
 		$(settings.bottomNav).click(function(){
 			settings.cancle = true;
 			removeVideo({data:0,target:{a:settings.iframeEl}});
-		})
+		});
 
 		if(settings.timeLeft){
 			settings.timeLeftPos = document.createElement("div");
@@ -148,23 +147,22 @@ $.fn.Jtube = function( options ) {
 	$(settings.iframeEl).addClass("hide");
 
 	this.setupPlayer = function(){
-			if(YT){
-				settings.player = new YT.Player(settings.iframeEl.id, {
-					height: '390',
-					width: '640',
-					videoId: settings.videoId,
-					// 'autoplay': 1,
-					playerVars:{"loop":0,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"opaque"},
-					events: {'onReady': onPlayerReady,'onStateChange':removeVideo}
-				});
+		settings.player = new YT.Player(settings.iframeEl.id, {
+			height: '390',
+			width: '640',
+			videoId: settings.videoId,
+			// 'autoplay': 1,
+			playerVars:{"loop":0,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"opaque"},
+			events: {'onReady': onPlayerReady,'onStateChange':removeVideo}
+		});
 
-				setPlayerSizeCustom();
-				settings.playerResizer = $(window).on("resize",setPlayerSizeCustom);
-				if(!window.addEventListener){
-					removeVideo({data:1});
-				}
-			}
+		setPlayerSizeCustom();
+		settings.playerResizer = $(window).on("resize",setPlayerSizeCustom);
+		if(!window.addEventListener){
+			removeVideo({data:1});
 		}
+
+	};
 	function onPlayerReady(evt){
 		if(!settings.cancle){
 			settings.iframeEl = $("#youtube-player")[0];
@@ -223,7 +221,7 @@ $.fn.Jtube = function( options ) {
 				if(settings.ldCss){
 					$(settings.ldCssEl).fadeOut('slow', function() {
 						this.parentNode.removeChild(this);
-					})
+					});
 				}
 			}
 			settings.onDone();
@@ -234,7 +232,7 @@ $.fn.Jtube = function( options ) {
 				if(settings.ldCss){
 					$(settings.ldCssEl).fadeOut('slow', function() {
 						this.parentNode.removeChild(this);
-					})
+					});
 				}
 				settings.loaded = true;
 			},200);
@@ -242,10 +240,8 @@ $.fn.Jtube = function( options ) {
 			settings.onPause();
 		}
 
-		if(YT){
-			if (evt.data == YT.PlayerState.BUFFERING) {
-				evt.target.setPlaybackQuality("hd720");
-			}
+		if (evt.data == YT.PlayerState.BUFFERING) {
+			evt.target.setPlaybackQuality("hd720");
 		}
 	}
 	function myStartFunc(){
