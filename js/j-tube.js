@@ -270,7 +270,7 @@ $.fn.Jtube = function( options ) {
 		}
 	}
 	function myStartFunc(){
-		if(debugMode){
+		if(settings.debugMode){
 			console.log("myStartFunc");
 		}
 	}
