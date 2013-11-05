@@ -61,7 +61,8 @@ $.fn.Jtube = function( options ) {
 		loaded:false,
 		cancle:false,
 		skipWhash:true,
-		skipHash:"#skip-vid"
+		skipHash:"#skip-vid",
+		debugMode:false
 	}, options );
 
 	if(settings.skipWhash){
@@ -269,13 +270,19 @@ $.fn.Jtube = function( options ) {
 		}
 	}
 	function myStartFunc(){
-		console.log("myStartFunc");
+		if(debugMode){
+			console.log("myStartFunc");
+		}
 	}
 	function myDoneFunc(){
-		console.log("myDoneFunc");
+		if(debugMode){
+			console.log("myDoneFunc");
+		}
 	}
 	function myPauseFunc() {
-		console.log("myPauseFunc");
+		if(debugMode){
+			console.log("myPauseFunc");
+		}
 	}
 	function setPlayerSizeCustom(){
 		if(settings.fullscreen){
