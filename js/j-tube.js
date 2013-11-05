@@ -185,7 +185,7 @@ $.fn.Jtube = function( options ) {
 		if(!settings.cancle){
 			settings.iframeEl = $("#youtube-player")[0];
 			settings.player.playVideo();
-			settings.player.setVolume(settings.voloume);
+			settings.player.setVolume(settings.volume);
 			evt.target.setPlaybackQuality('hd720');
 			setTimeout(fadeInEl,2000);
 
