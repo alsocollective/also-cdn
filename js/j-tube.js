@@ -4,6 +4,12 @@ $.fn.Jtube = function( options ) {
 		version 0.1 of J-tube
 		by Bohdan Anderson @ Also Collective
 		24 10 2013
+
+		05 11 2013
+			added the loop functionality
+			onLoaded function, run once, onStart is run every time...
+			changed the request wmode from opaque to transparent
+			added volume
 	*/
 
 	var settings = $.extend({
@@ -16,22 +22,33 @@ $.fn.Jtube = function( options ) {
 		winH:0,
 		pW:0,
 		pH:0,
+		loop:0,
+		volume:100,
+		applyToContainer:false,
+		vidWidth:"640",
+		vidHeight:"390",
+
 		onDone:myDoneFunc,
 		onStart:myStartFunc,
 		onPause:myPauseFunc,
-		videoId:"LkQnJHAPHIU"/*"_vJG9kaVLEA"*//*"dYMgg1evFmw"*/,
+		onLoaded:function(){return null},
+
+		videoId:"dYMgg1evFmw"/*"_vJG9kaVLEA"*//*"dYMgg1evFmw"*/,
 		loadingDiv:false,
 		loadingEl:null,
 		loadingGif:"gif.gif",
+
 		ldCss:true, 		//loading the element
 		ldCssEl:null,
-		ldCssFunc:null,
+		ldCssFunc:function(){return null},
+
 		bottomNav:null,
 		skipvid:true,
 		skipvidEl:null,
 		skipvidText:"skipVideo",
 		skipvidWidth:0,
 		skipvidHeight:0,
+
 		timeLeft:true,
 		timeLeftPos:null,
 		timePosColour:null,
@@ -40,6 +57,7 @@ $.fn.Jtube = function( options ) {
 		timeCounter:true,
 		timeCounterEl:null,
 		videoLength:0,
+
 		loaded:false,
 		cancle:false,
 		skipWhash:true,
@@ -148,11 +166,11 @@ $.fn.Jtube = function( options ) {
 
 	this.setupPlayer = function(){
 		settings.player = new YT.Player(settings.iframeEl.id, {
-			height: '390',
-			width: '640',
+			height: settings.vidHeight,
+			width: settings.vidWidth,
 			videoId: settings.videoId,
-			// 'autoplay': 1,
-			playerVars:{"loop":0,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"opaque"},
+			// 'autoplay': 1,  wmode=transparent
+			playerVars:{"loop":settings.loop,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"transparent","html5":1},
 			events: {'onReady': onPlayerReady,'onStateChange':removeVideo}
 		});
 
@@ -167,6 +185,7 @@ $.fn.Jtube = function( options ) {
 		if(!settings.cancle){
 			settings.iframeEl = $("#youtube-player")[0];
 			settings.player.playVideo();
+			settings.player.setVolume(settings.voloume);
 			evt.target.setPlaybackQuality('hd720');
 			setTimeout(fadeInEl,2000);
 
@@ -183,6 +202,7 @@ $.fn.Jtube = function( options ) {
 				},50);
 			}
 		}
+		settings.onLoaded();
 	}
 	function fadeInEl(){
 		if(!settings.cancle){
@@ -205,24 +225,28 @@ $.fn.Jtube = function( options ) {
 	}
 	function removeVideo(evt){
 		if(evt.data == 0){
-			$(evt.target.a).fadeOut('slow',function(){
-				this.parentNode.removeChild(this);
-			});
-			if(settings.skipvid){
-				$(settings.bottomNav).fadeOut('slow',function(){
+			if(settings.loop === 0){
+				$(evt.target.a).fadeOut('slow',function(){
 					this.parentNode.removeChild(this);
 				});
-			}
-			if(!settings.loaded){
-				function onPlayerReady(){
-					return null;
-				}
-				$("#splash").fadeIn('fast');
-				if(settings.ldCss){
-					$(settings.ldCssEl).fadeOut('slow', function() {
+				if(settings.skipvid){
+					$(settings.bottomNav).fadeOut('slow',function(){
 						this.parentNode.removeChild(this);
 					});
 				}
+				if(!settings.loaded){
+					function onPlayerReady(){
+						return null;
+					}
+					$("#splash").fadeIn('fast');
+					if(settings.ldCss){
+						$(settings.ldCssEl).fadeOut('slow', function() {
+							this.parentNode.removeChild(this);
+						});
+					}
+				}
+			} else {
+				settings.player.playVideo();
 			}
 			settings.onDone();
 		}else if(evt.data == 1){
@@ -245,10 +269,13 @@ $.fn.Jtube = function( options ) {
 		}
 	}
 	function myStartFunc(){
+		console.log("myStartFunc");
 	}
 	function myDoneFunc(){
+		console.log("myDoneFunc");
 	}
 	function myPauseFunc() {
+		console.log("myPauseFunc");
 	}
 	function setPlayerSizeCustom(){
 		if(settings.fullscreen){
@@ -264,7 +291,14 @@ $.fn.Jtube = function( options ) {
 				settings.pW = settings.winW*(1+(settings.winH/settings.winW)+diff);
 				settings.pH = settings.winH;
 			}
-			$(settings.player.a).css({width:settings.pW,height:settings.pH,left:(settings.winW-settings.pW)/2,top:(settings.winH-settings.pH)/2});
+			if(settings.applyToContainer){
+				// console.log(settings.player.a.pa)
+				// $(settings.player.a.parentNode.parentNode).css({width:settings.winW,height:settings.winH-20});
+				$(settings.player.a.parentNode).css({width:Math.floor(settings.pW),height:Math.floor(settings.pH),left:Math.floor((settings.winW-settings.pW)/2),top:(settings.winH-settings.pH)/2,position:"absolute"});
+				$(settings.player.a).css({width:"100%",height:"100%"});
+			} else {
+				$(settings.player.a).css({width:Math.floor(settings.pW),height:Math.floor(settings.pH),left:Math.floor((settings.winW-settings.pW)/2),top:(settings.winH-settings.pH)/2,position:"absolute"});
+			}
 		}
 	}
 
