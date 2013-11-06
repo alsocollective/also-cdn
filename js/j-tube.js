@@ -275,12 +275,12 @@ $.fn.Jtube = function( options ) {
 		}
 	}
 	function myDoneFunc(){
-		if(debugMode){
+		if(settings.debugMode){
 			console.log("myDoneFunc");
 		}
 	}
 	function myPauseFunc() {
-		if(debugMode){
+		if(settings.debugMode){
 			console.log("myPauseFunc");
 		}
 	}
