@@ -10,6 +10,9 @@ $.fn.Jtube = function( options ) {
 			onLoaded function, run once, onStart is run every time...
 			changed the request wmode from opaque to transparent
 			added volume
+		06 11 2013
+			corrected the loop functionality
+
 	*/
 
 	var settings = $.extend({
@@ -62,7 +65,9 @@ $.fn.Jtube = function( options ) {
 		cancle:false,
 		skipWhash:true,
 		skipHash:"#skip-vid",
-		debugMode:false
+		debugMode:false,
+		fallbackImage:null
+
 	}, options );
 
 	if(settings.skipWhash){
@@ -171,7 +176,7 @@ $.fn.Jtube = function( options ) {
 			width: settings.vidWidth,
 			videoId: settings.videoId,
 			// 'autoplay': 1,  wmode=transparent
-			playerVars:{"loop":settings.loop,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"transparent","html5":1},
+			playerVars:{"loop":settings.loop,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"transparent","html5":1,"playlist":","},
 			events: {'onReady': onPlayerReady,'onStateChange':removeVideo}
 		});
 
@@ -179,6 +184,17 @@ $.fn.Jtube = function( options ) {
 		settings.playerResizer = $(window).on("resize",setPlayerSizeCustom);
 		if(!window.addEventListener){
 			removeVideo({data:1});
+		}
+		if(settings.fallbackImage){
+			var element = settings.player.a.parentNode.parentNode;
+			$(element).css({
+				backgroundPosition:"center",
+				backgroundSize:"cover",
+				WebkitBackgroundSize: "cover",
+				MozBbackgroundSize: "cover",
+				OBackgroundSize: "cover",
+				backgroundImage: "url("+settings.fallbackImage+")"
+			})
 		}
 
 	};
@@ -246,12 +262,13 @@ $.fn.Jtube = function( options ) {
 						});
 					}
 				}
-			} else {
-				settings.player.playVideo();
 			}
+			 /*else {
+				settings.player.playVideo();
+			}*/
 			settings.onDone();
 		}else if(evt.data == 1){
-			settings.onStart();
+			settings.onStart(settings);
 			setTimeout(function(){
 				$("#splash").fadeIn('slow');
 				if(settings.ldCss){
@@ -262,7 +279,7 @@ $.fn.Jtube = function( options ) {
 				settings.loaded = true;
 			},200);
 		} else if(evt.data == 2){
-			settings.onPause();
+			settings.onPause(settings);
 		}
 
 		if (evt.data == YT.PlayerState.BUFFERING) {
