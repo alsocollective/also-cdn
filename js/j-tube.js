@@ -176,7 +176,7 @@ $.fn.Jtube = function( options ) {
 			width: settings.vidWidth,
 			videoId: settings.videoId,
 			// 'autoplay': 1,  wmode=transparent
-			playerVars:{"loop":settings.loop,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"transparent","html5":1,"playlist":","},
+			playerVars:{"loop":settings.loop,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"transparent","playlist":","},
 			events: {'onReady': onPlayerReady,'onStateChange':removeVideo}
 		});
 
