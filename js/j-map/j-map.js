@@ -295,7 +295,7 @@ for more reference look at <a href="http://google-maps-utility-library-v3.google
 **/
 	this.useCluster = function(cOptions){
 		var clusterSettings = $.extend({
-			imagePath: 'http://alsocollective.github.io/static/img/base-',
+			imagePath: 'http://alsocollective.github.io/also-cdn/js/j-map/static/img/base-',
 			imageSizes: [100,100],
 			averageCenter:true
 		}, cOptions);
