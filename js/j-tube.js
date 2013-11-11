@@ -12,6 +12,8 @@ $.fn.Jtube = function( options ) {
 			added volume
 		06 11 2013
 			corrected the loop functionality
+		07 11 2013
+			removed the html-5 tag from the request, was causing problems
 
 	*/
 
