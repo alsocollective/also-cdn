@@ -1,3 +1,6 @@
+function onPlayerReady(){
+	console.log("what what!! this shouldn't be playeing?!!");
+}
 (function ( $ ) {
 $.fn.Jtube = function( options ) {
 	/*
@@ -14,7 +17,9 @@ $.fn.Jtube = function( options ) {
 			corrected the loop functionality
 		07 11 2013
 			removed the html-5 tag from the request, was causing problems
-
+		12 11 2013
+			discovered, that it does not work on some computers
+			when loading into iframe on firefox, it doesn't load, so need to position off the screen when loading
 	*/
 
 	var settings = $.extend({
@@ -76,7 +81,7 @@ $.fn.Jtube = function( options ) {
 		var hash = window.location.hash;
 		if(hash.length>0){
 			settings.cancle = true;
-			removeVideo({data:0,target:{a:settings.iframeEl}});
+			stateChange({data:0,target:{a:settings.iframeEl}});
 			return null;
 		}
 	}
@@ -101,7 +106,7 @@ $.fn.Jtube = function( options ) {
 		settings.bottomNav.appendChild(settings.skipvidEl);
 		$(settings.bottomNav).click(function(){
 			settings.cancle = true;
-			removeVideo({data:0,target:{a:settings.iframeEl}});
+			stateChange({data:0,target:{a:settings.iframeEl}});
 		});
 
 		if(settings.timeLeft){
@@ -170,22 +175,37 @@ $.fn.Jtube = function( options ) {
 	var tag = document.createElement('script');
 	tag.src = "https://www.youtube.com/iframe_api";
 	settings.iframeEl.parentNode.insertBefore(tag, settings.iframeEl);
-	$(settings.iframeEl).addClass("hide");
+	$(settings.iframeEl).addClass("shift-left");
 
 	this.setupPlayer = function(){
+		if(settings.debugMode){
+			console.log("set up player starting");
+		}
 		settings.player = new YT.Player(settings.iframeEl.id, {
 			height: settings.vidHeight,
 			width: settings.vidWidth,
 			videoId: settings.videoId,
 			// 'autoplay': 1,  wmode=transparent
-			playerVars:{"loop":settings.loop,"autohide":0,"controls":0,"showinfo":0,"hd":0,"modestbranding":1,"wmode":"transparent","playlist":","},
-			events: {'onReady': onPlayerReady,'onStateChange':removeVideo}
+			playerVars:{
+				"autoplay":1,
+				"loop":settings.loop,
+				"autohide":0,
+				"controls":0,
+				"showinfo":0,
+				"hd":0,
+				"modestbranding":1,
+				"wmode":"transparent",
+				"playlist":","
+			},
+			events: {
+				'onReady': onPlayerReady,
+				'onStateChange':stateChange
+			}
 		});
-
 		setPlayerSizeCustom();
 		settings.playerResizer = $(window).on("resize",setPlayerSizeCustom);
 		if(!window.addEventListener){
-			removeVideo({data:1});
+			stateChange({data:1});
 		}
 		if(settings.fallbackImage){
 			var element = settings.player.a.parentNode.parentNode;
@@ -198,9 +218,14 @@ $.fn.Jtube = function( options ) {
 				backgroundImage: "url("+settings.fallbackImage+")"
 			})
 		}
-
+		if(settings.debugMode){
+			console.log("setup player ending");
+		}
 	};
 	function onPlayerReady(evt){
+		if(settings.debugMode){
+			console.log("on player is ready");
+		}
 		if(!settings.cancle){
 			settings.iframeEl = $("#youtube-player")[0];
 			settings.player.playVideo();
@@ -222,6 +247,9 @@ $.fn.Jtube = function( options ) {
 			}
 		}
 		settings.onLoaded();
+		if(settings.debugMode){
+			console.log("on player is done");
+		}
 	}
 	function fadeInEl(){
 		if(!settings.cancle){
@@ -229,7 +257,7 @@ $.fn.Jtube = function( options ) {
 				this.parentNode.removeChild(this);
 			});
 			$(settings.iframeEl).addClass('jtube-animation');
-			$(settings.iframeEl).removeClass('hide');
+			$(settings.iframeEl).removeClass('shift-left');
 				setTimeout(function(){
 					$(settings.iframeEl).removeClass('jtube-animation');
 				},settings.animationTime);
@@ -237,12 +265,18 @@ $.fn.Jtube = function( options ) {
 	}
 	function fadeOutEl(){
 		$(settings.iframeEl).addClass('jtube-animation');
-		$(settings.iframeEl).addClass('hide');
+		$(settings.iframeEl).addClass('shift-left');
 			setTimeout(function(){
 				$(settings.iframeEl).removeClass('jtube-animation');
 			},settings.animationTime);
 	}
-	function removeVideo(evt){
+	function stateChange(evt){
+		if(settings.debugMode){
+			console.log("stateChange video is called " + evt.data);
+		}
+		// 0 video done playing
+		// 1 play
+		// 2 pause
 		if(evt.data == 0){
 			if(settings.loop === 0){
 				$(evt.target.a).fadeOut('slow',function(){
@@ -286,6 +320,9 @@ $.fn.Jtube = function( options ) {
 
 		if (evt.data == YT.PlayerState.BUFFERING) {
 			evt.target.setPlaybackQuality("hd720");
+		}
+		if(settings.debugMode){
+			console.log("stateChange video is done");
 		}
 	}
 	function myStartFunc(){

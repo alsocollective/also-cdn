@@ -3,8 +3,9 @@
 #youtube-player{
 	position: absolute;
 }
-.hide{
-	opacity: 0;
+.shift-left{
+  position: absolute;
+	left: 100%;
 }
 .jtube-animation{
 	-webkit-transition: all 1s;
