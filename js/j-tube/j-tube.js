@@ -30,6 +30,8 @@ $.fn.Jtube = function( options ) {
 		animationTime:1000,
 		winW:0,
 		winH:0,
+		videoW:16,
+		videoH:9,
 		pW:0,
 		pH:0,
 		loop:0,
@@ -187,15 +189,17 @@ $.fn.Jtube = function( options ) {
 			videoId: settings.videoId,
 			// 'autoplay': 1,  wmode=transparent
 			playerVars:{
-				"autoplay":1,
-				// "loop":settings.loop,
-				"autohide":0,
+				"loop":1,
 				"controls":0,
 				"showinfo":0,
-				"hd":0,
-				"modestbranding":1,
+				"rel":0,
+				"autoplay":0,
+				"vq":"highres",
+				"html5":1,
+				"start":0,
+				"enablejsapi":1,
 				"wmode":"transparent",
-				"playlist":","
+				"modestbranding":1
 			},
 			events: {
 				'onReady': onPlayerReady,
@@ -278,6 +282,7 @@ $.fn.Jtube = function( options ) {
 		// 0 video done playing
 		// 1 play
 		// 2 pause
+		// 3 buffering
 		if(evt.data == 0){
 			if(settings.loop === 0){
 				$(evt.target.a).fadeOut('slow',function(){
@@ -299,10 +304,12 @@ $.fn.Jtube = function( options ) {
 						});
 					}
 				}
-			}
-			 /*else {
+			}else {
+				if(settings.debugMode){
+					console.log("FORCE restart video");
+				}
 				settings.player.playVideo();
-			}*/
+			}
 			settings.onDone();
 		}else if(evt.data == 1){
 			settings.onStart(settings);
@@ -317,10 +324,6 @@ $.fn.Jtube = function( options ) {
 			},200);
 		} else if(evt.data == 2){
 			settings.onPause(settings);
-		}
-
-		if (evt.data == YT.PlayerState.BUFFERING) {
-			evt.target.setPlaybackQuality("hd720");
 		}
 		if(settings.debugMode){
 			console.log("stateChange video is done");
@@ -348,7 +351,7 @@ $.fn.Jtube = function( options ) {
 			settings.pW = settings.winW;
 			settings.pH = settings.winH;
 			var diff = (settings.winW/settings.winH);
-			if(settings.winW/16 > settings.winH/9){
+			if(settings.winW/settings.videoW > settings.winH/settings.videoH){
 				settings.pW = settings.winW;
 				settings.pH = settings.winH*(1+diff);
 			} else {

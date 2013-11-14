@@ -1,0 +1,106 @@
+<html>
+<head>
+	<title>j-tube sample</title>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="j-tube.js"></script>
+	<style type="text/css">
+		html,body{
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+
+		#background-container{
+			background-color: #000;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			right: 0;
+			overflow: hidden;
+			position: absolute;
+			z-index: 1;
+		}
+		#youtube-player{
+			position: relative;
+			z-index: 10;
+			text-decoration: none;
+		}
+		#backface-hidden{
+			color: #FFF;
+			-webkit-backface-visibility:hidden;
+		}
+
+
+
+		#block-top{
+			width: 100%;
+			height: 100%;
+		}
+		#container{
+			width: 75%;
+			margin: 0 auto 0 auto;
+			padding: 2em;
+		}
+
+		p{
+
+		}
+	</style>
+</head>
+<body>
+<div id="backface-hidden">
+	<div id="background-container">
+		<div id="youtube-container">
+		<div id="youtube-player"></div>
+		</div>
+	</div>
+</div>
+<div id="block-top">
+</div>
+<div id="container">
+<h1>j-tube</h1>
+<p>Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.</p>
+</div>
+
+
+<script type="text/javascript">
+var myPlayer = $("#youtube-player").Jtube({
+		// videoId:"RlCKrl1F-PI",
+		videoId:"Teu110o31yc",
+		// videoId:"1kHAy3450yU",
+		skipvid:false,
+		skipWhash:false,
+		timeLeft:false,
+		loop:1,
+		applyToContainer:true,
+		vidHeight:"100%",
+		vidWidth:"100%",
+		volume:0,
+		// debugMode:true,
+		fallbackImage:"http://also-static.com/dotdotdash/uploads/bk-vid-img.png",
+		onStart:function(settings){
+			if(settings.debugMode){
+				console.log("start");
+			}
+			$(settings.player.a).css({"display":"inline-block"})
+			// $(settings.player.a).fadeIn('fast');
+			return null;
+		},
+		onPause:function(settings){
+			if(settings.debugMode){
+				console.log("pause");
+			}
+			$(settings.player.a).css({"display":"none"})
+			// $(settings.player.a).fadeOut('fast');
+			return null;
+		}
+	});
+function onYouTubeIframeAPIReady() {
+	myPlayer.setupPlayer();
+}
+</script>
+</body>
+</html>
