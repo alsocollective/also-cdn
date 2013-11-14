@@ -39,10 +39,12 @@ $.fn.Jtube = function( options ) {
 		applyToContainer:false,
 		vidWidth:"640",
 		vidHeight:"390",
+		vidQuality:"highres",
 
 		onDone:myDoneFunc,
 		onStart:myStartFunc,
 		onPause:myPauseFunc,
+		onBuffering:function(){return null},
 		onLoaded:function(){return null},
 
 		videoId:"dYMgg1evFmw"/*"_vJG9kaVLEA"*//*"dYMgg1evFmw"*/,
@@ -194,7 +196,7 @@ $.fn.Jtube = function( options ) {
 				"showinfo":0,
 				"rel":0,
 				"autoplay":0,
-				"vq":"highres",
+				"vq":settings.vidQuality,
 				"html5":1,
 				"start":0,
 				"enablejsapi":1,
@@ -251,7 +253,8 @@ $.fn.Jtube = function( options ) {
 				},50);
 			}
 		}
-		settings.onLoaded();
+		settings.onLoaded(settings);
+
 		if(settings.debugMode){
 			console.log("on player is done");
 		}
@@ -324,6 +327,8 @@ $.fn.Jtube = function( options ) {
 			},200);
 		} else if(evt.data == 2){
 			settings.onPause(settings);
+		} else if(evt.data == YT.PlayerState.BUFFERING){
+			settings.onBuffering(settings);
 		}
 		if(settings.debugMode){
 			console.log("stateChange video is done");
