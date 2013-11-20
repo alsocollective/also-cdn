@@ -170,7 +170,7 @@ To start the map, should only be called once the map api has been loaded, which 
 			if(settings.debugMode){
 				console.log("set Map Style");
 			}
-			mapOptions.styles = settings.map_styles
+			mapOptions.styles = settings.mapStyles
 			if(settings.debugMode){
 				console.log(mapOptions.zoom);
 				console.log(mapOptions.styles);
@@ -181,7 +181,17 @@ To start the map, should only be called once the map api has been loaded, which 
 
 /**
 Initialized the over lay, added className "gmap-overlay"(by default) to each square of google map <br>
-Use this only once
+Use this only once<br>
+example of the css to be used
+
+@example
+	.gmap-overlay{
+		background-image: url("/static/img/cat.png");
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+	}
 
 @method setupOverlay
 **/
