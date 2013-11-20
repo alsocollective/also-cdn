@@ -157,7 +157,7 @@ To start the map, should only be called once the map api has been loaded, which 
 			disableDefaultUI: true,
 		}
 		if(settings.mapStyles){
-			mapOptions.styles = map_styles
+			mapOptions.styles = settings.map_styles
 		}
 		settings.activeMap = new google.maps.Map(settings.selectedElement, mapOptions);
 	}
