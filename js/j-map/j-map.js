@@ -171,6 +171,10 @@ To start the map, should only be called once the map api has been loaded, which 
 				console.log("set Map Style");
 			}
 			mapOptions.styles = settings.map_styles
+			if(settings.debugMode){
+				console.log(mapOptions.zoom);
+				console.log(mapOptions.styles);
+			}
 		}
 		settings.activeMap = new google.maps.Map(settings.selectedElement, mapOptions);
 	}
