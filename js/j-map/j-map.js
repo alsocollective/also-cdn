@@ -122,15 +122,22 @@ $.fn.Jmap = function( options ) {
 		infoDisableAutoPan: false,
 
 		//Marker object
-		makerCluster:null
+		makerCluster:null,
 
+		debugMode:false
 
 	}, options );
 
-
+	if(settings.debugMode){
+		console.log("Debug MODE is turned on");
+	}
 	loadScript();
 
 	function loadScript(){
+		if(settings.debugMode){
+			console.log("loading maps script");
+		}
+
 		if(!settings.selectedElement){
 			settings.selectedElement = document.getElementById("google-maps")
 		}
@@ -150,6 +157,9 @@ To start the map, should only be called once the map api has been loaded, which 
 	}
 **/
 	this.init = function(){
+		if(settings.debugMode){
+			console.log("init is called");
+		}
 		var mapOptions = {
 			zoom: settings.defaultZoom,
 			center: new google.maps.LatLng(settings.locationLat,settings.locaiotnLon),
@@ -157,6 +167,9 @@ To start the map, should only be called once the map api has been loaded, which 
 			disableDefaultUI: true,
 		}
 		if(settings.mapStyles){
+			if(settings.debugMode){
+				console.log("set Map Style");
+			}
 			mapOptions.styles = settings.map_styles
 		}
 		settings.activeMap = new google.maps.Map(settings.selectedElement, mapOptions);
