@@ -12,7 +12,39 @@ test
 
 
 /**
-Jmap is the container for all the action going on with this plugin for Jquery
+Jmap is the container for all the action going on with this plugin for Jquery<br>
+a standard start up includes:
+@example
+	<html>
+	<head>
+	<style type="text/css">
+	#google-maps{
+		width: 100%;
+		height: 100%;
+	}
+	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="http://alsocollective.github.io/also-cdn/js/j-map/j-map.js"></script>
+	<script src="http://alsocollective.github.io/also-cdn/js/j-map/infobubble.js"></script>
+	<script src="http://alsocollective.github.io/also-cdn/js/j-map/markerclusterer.js"></script>
+	</head>
+	<body>
+	<div id="google-maps"></div>
+	<script type="text/javascript">
+	var myMap = $("#google-maps").Jmap({
+	    defaultZoom:3,
+	    locationLat:43.648616,
+	    locaiotnLon:-79.396644,
+	    mapStyles:myMapStyle,
+	    debugMode:true
+	});
+	function JmapGoogleReady(){
+	    myMap.init();
+	}
+	</script>
+	</body>
+	</html>
+
 <h4>Created by:</h4>
 <a href="http://www.bohdananderson.com" target="_blank"> Bohdan Anderson</a> @ <a href="http://www.alsocollective.com" target="_blank">Also Collective</a>
 
@@ -20,7 +52,6 @@ Jmap is the container for all the action going on with this plugin for Jquery
 @constructor
 @class Jmap
 @constructor
-@example
 @example
 	var myMap = $("#google-maps").Jmap({
 		defaultZoom:18,
@@ -61,8 +92,8 @@ Jmap is the container for all the action going on with this plugin for Jquery
 	@param {String} [options.mapStyles] Generate the Json format from <a href="http://gmaps-samples-v3.googlecode.com/svn/trunk/styledmaps/wizard/index.html" target="_blank">here</a>
 	@param {Number} [options.defaultZoom] Default is 8, determines the zoom on load
 	@param {Boolean} [options.oneIconAtATime] Default is true, will hide all other info bubbles when opening a new one
-	@param {funciton} [options.funOnClick] this is ran when the marker is clicked
-	@param {funciton} [options.funOffClick] this is ran when an other marker is clicked
+	@param {funciton} [options.funOnClick] this is ran when the marker is clicked, if true it will do the default stuff other wise nothing will happen
+	@param {funciton} [options.funOffClick] this is ran when an other marker is clicked, if true it will do the default stuff other wise nothing will happen
 
 
 	@param {Number} [options.infoPadding] px size
@@ -103,8 +134,8 @@ $.fn.Jmap = function( options ) {
 		markers:true,
 		markerTypes:[],
 		oneIconAtATime:true,
-		funOnClick:function(){return null;},
-		funOffClick:function(){return null;},
+		funOnClick:function(){return true;},
+		funOffClick:function(){return true;},
 
 		//infobubble styles
 		infoShadowStyle: 0, //either 0, 1, or 3
@@ -171,10 +202,6 @@ To start the map, should only be called once the map api has been loaded, which 
 				console.log("set Map Style");
 			}
 			mapOptions.styles = settings.mapStyles
-			if(settings.debugMode){
-				console.log(mapOptions.zoom);
-				console.log(mapOptions.styles);
-			}
 		}
 		settings.activeMap = new google.maps.Map(settings.selectedElement, mapOptions);
 	}
@@ -234,64 +261,88 @@ You can use origin on a sprite sheet to use one image for all your icons
 **/
 
 	this.addMarkerType = function(optionsin){
-		if(!optionsin.url){
-			console.log("need to have a url to the image for this to work")
-			return null
-		}
-		var locSettings = $.extend({
-			size: [100,100],
-			origin: [0,0],
-			anchor: [0,0],
-			scaledSize:[100,100]
-		}, optionsin);
 
-		var markerImage = {
-			url: optionsin.url,
-			size: new google.maps.Size(locSettings.size[0], locSettings.size[1]),
-			origin: new google.maps.Point(locSettings.origin[0], locSettings.origin[1]),
-			anchor: new google.maps.Point(locSettings.anchor[0],locSettings.anchor[1]),
-			scaledSize: new google.maps.Size(locSettings.scaledSize[0], locSettings.scaledSize[1])
-		};
+		var markerImage = null;
+		if(optionsin.type == "svg"){
+			markerImage = optionsin;
+		} else {
+			if(!optionsin.url){
+				console.log("need to have a url to the image for this to work")
+				return null
+			}
+			var locSettings = $.extend({
+				size: [100,100],
+				origin: [0,0],
+				anchor: [0,0],
+				scaledSize:[100,100]
+			}, optionsin);
+
+			markerImage = {
+				url: optionsin.url,
+				size: new google.maps.Size(locSettings.size[0], locSettings.size[1]),
+				origin: new google.maps.Point(locSettings.origin[0], locSettings.origin[1]),
+				anchor: new google.maps.Point(locSettings.anchor[0],locSettings.anchor[1]),
+				scaledSize: new google.maps.Size(locSettings.scaledSize[0], locSettings.scaledSize[1])
+			};
+		}
+		console.log(markerImage);
 		settings.markerTypes.push(markerImage);
 	}
 
-	function makeMarker(lat,lon,iconNum,altIconNum,name,bubbleContent){
+	function makeMarker(values){
 		var id = settings.dataObjectList.length;
-		var pos = new google.maps.LatLng(lat,lon);
+		var pos = new google.maps.LatLng(values.lat,values.lon);
 		var marker =  new google.maps.Marker({
 			position: pos,
-			icon: settings.markerTypes[iconNum],
-			title: name,
+			icon: settings.markerTypes[values.icon],
+			// {
+				// path: google.maps.SymbolPath.CIRCLE,//"M 100 100 L 300 100 L 200 300 z",//"m 0,0 l45,0 l 190,225 l -45,0 l -190,-225 z",
+				// fillOpacity: 1,
+				// fillColor: 'ff0000',
+				// strokeWeight:0,
+				// scale: 10 //pixels
+			// },
+			title: values.name,
 			map: settings.activeMap,
 			id : id,
 			displayInfo: false,
-			defIcon:iconNum,
-			altIcon:altIconNum
+			defIcon:values.icon,
+			altIcon:values.altIcon
 		});
 
-		var infoBubble = new InfoBubble({
-			map: settings.activeMap,
-			content: bubbleContent,
-			position: pos,
-			shadowStyle: settings.infoShadowStyle,padding: settings.infoPadding,backgroundColor: settings.infoBackgroundColor,borderRadius: settings.infoBorderRadius,arrowSize: settings.infoArrowSize,borderWidth: settings.infoBorderWidth,borderColor: settings.infoBorderColor,hideCloseButton: settings.infoHideCloseButton,arrowPosition: settings.infoArrowPosition,backgroundClassName: settings.infoBackgroundClassName,arrowStyle: settings.infoArrowStyle,disableAnimation:settings.infoDisableAnimation,disableAutoPan:settings.infoDisableAutoPan,
-			id:id
-		});
+		var infoBubble = null;
+		if(values.description){
+			infoBubble = new InfoBubble({
+				map: settings.activeMap,
+				content: values.description,
+				position: pos,
+				shadowStyle: settings.infoShadowStyle,padding: settings.infoPadding,backgroundColor: settings.infoBackgroundColor,borderRadius: settings.infoBorderRadius,arrowSize: settings.infoArrowSize,borderWidth: settings.infoBorderWidth,borderColor: settings.infoBorderColor,hideCloseButton: settings.infoHideCloseButton,arrowPosition: settings.infoArrowPosition,backgroundClassName: settings.infoBackgroundClassName,arrowStyle: settings.infoArrowStyle,disableAnimation:settings.infoDisableAnimation,disableAutoPan:settings.infoDisableAutoPan,
+				id:id
+			});
+		}
 
 		settings.dataObjectList.push([marker,infoBubble])
 		settings.markersList.push(marker);
 
-		google.maps.event.addListener(marker, "click", function() {
-			if(settings.dataObjectList[this.id][0].displayInfo == false){
-				if(settings.oneIconAtATime){
-					setAllIconsFalse();
+		for(var a = 0, max = values.interAction.length; a < max; a += 1){
+			google.maps.event.addListener(marker, values.interAction[a], function() {
+				if(settings.debugMode){
+					console.log("called " + values.interAction + " On " + this.id);
 				}
-				settings.funOnClick(this.id);
-				show(this.id);
-			} else {
-				settings.funOffClick(this.id);
-				hideEl(this.id);
-			}
-		});
+				if(settings.dataObjectList[this.id][0].displayInfo == false){
+					if(settings.oneIconAtATime){
+						setAllIconsFalse();
+					}
+					if(settings.funOnClick(this.id,settings)){
+						show(this.id);
+					}
+				} else {
+					if(settings.funOffClick(this.id,settings)){
+						hideEl(this.id);
+					}
+				}
+			});
+		}
 	}
 
 	function setAllIconsFalse(){
@@ -364,11 +415,25 @@ Be sure to create the icon types before loading.
 	]}
 **/
 	this.loadData = function(json){
-		console.log(json["data"]);
-		$.each(json["data"],function(index,value){
-			makeMarker(value["lat"],value["lon"],value["icon"],value["altIcon"],value["name"],value["description"])
-			console.log(value);
-		})
+		if(settings.debugMode){
+			console.log(json["data"]);
+		}
+		if(settings.markerTypes){
+			$.each(json["data"],function(index,value){
+				var values = $.extend({
+					lat:0,
+					lon:0,
+					icon:0,
+					altIcon:0,
+					name:"no-name",
+					interAction:["click"]
+				}, value );
+				makeMarker(values)
+				if(settings.debugMode){
+					console.log(value);
+				}
+			})
+		}
 	}
 
 	function show(id) {
