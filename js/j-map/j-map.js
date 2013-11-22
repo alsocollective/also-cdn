@@ -128,9 +128,6 @@ $.fn.Jmap = function( options ) {
 		
 		//Controls
 		zoomControl: false,
-		zoomControlOptions: {      
-			style: google.maps.ZoomControlStyle.SMALL
-		},
 
 		locationLat:-34.397,
 		locaiotnLon:150.644,
