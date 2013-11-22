@@ -112,6 +112,10 @@ a standard start up includes:
 	@param {Boolean} [options.infoHideCloseButton] Hide button...
 	@param {Boolean} [options.infoDisableAnimation] Pop in animation
 	@param {Boolean} [options.infoDisableAutoPan] Centers the map to location of marker when clicked
+
+	@param {Boolean} [options.zoomControl] Toggle to control visibilty of zoom controls
+	@param {Object} [options.zoomControlOptions] Set various options for zoomo controls
+	@param {Object} [options.zoomControlOptions.style] Options include size and
 **/
 
 (function ( $ ) {
@@ -121,6 +125,12 @@ $.fn.Jmap = function( options ) {
 		activeMap:null,
 		mapContainer:null,
 		selectedElement:null,
+		
+		//Controls
+		zoomControl: false,
+		zoomControlOptions: {      
+			style: google.maps.ZoomControlStyle.SMALL
+		}
 
 		locationLat:-34.397,
 		locaiotnLon:150.644,
@@ -196,6 +206,8 @@ To start the map, should only be called once the map api has been loaded, which 
 			center: new google.maps.LatLng(settings.locationLat,settings.locaiotnLon),
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
 			disableDefaultUI: true,
+			zoomControl: settings.zoomControl,
+			zoomControlOptions: settings.zoomControlOptions
 		}
 		if(settings.mapStyles){
 			if(settings.debugMode){
