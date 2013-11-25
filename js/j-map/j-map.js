@@ -126,6 +126,8 @@ $.fn.Jmap = function( options ) {
 		locaiotnLon:150.644,
 		defaultZoom:8,
 		mapStyles:null,
+		maxZoom:5,
+		minZoom:2,
 		apiKey:"AIzaSyBkV96cb90IRP3z54fwmQlLH_Fpo4p4rbk",
 
 		//loaded in data
@@ -196,6 +198,8 @@ To start the map, should only be called once the map api has been loaded, which 
 			center: new google.maps.LatLng(settings.locationLat,settings.locaiotnLon),
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
 			disableDefaultUI: true,
+			maxZoom:settings.maxZoom,
+			minZoom:settings.minZoom
 		}
 		if(settings.mapStyles){
 			if(settings.debugMode){
@@ -285,23 +289,22 @@ You can use origin on a sprite sheet to use one image for all your icons
 				scaledSize: new google.maps.Size(locSettings.scaledSize[0], locSettings.scaledSize[1])
 			};
 		}
-		console.log(markerImage);
 		settings.markerTypes.push(markerImage);
 	}
 
 	function makeMarker(values){
 		var id = settings.dataObjectList.length;
 		var pos = new google.maps.LatLng(values.lat,values.lon);
+
+		var icon = settings.markerTypes[values.icon];
+		var originalScale = icon.scale;
+		icon.scale = values.scale;
+		icon.strokeWeight = values.strokeWeight;
+		console.log(icon.scale);
+
 		var marker =  new google.maps.Marker({
 			position: pos,
-			icon: settings.markerTypes[values.icon],
-			// {
-				// path: google.maps.SymbolPath.CIRCLE,//"M 100 100 L 300 100 L 200 300 z",//"m 0,0 l45,0 l 190,225 l -45,0 l -190,-225 z",
-				// fillOpacity: 1,
-				// fillColor: 'ff0000',
-				// strokeWeight:0,
-				// scale: 10 //pixels
-			// },
+			icon: icon,
 			title: values.name,
 			map: settings.activeMap,
 			id : id,
@@ -314,7 +317,7 @@ You can use origin on a sprite sheet to use one image for all your icons
 		if(values.description){
 			infoBubble = new InfoBubble({
 				map: settings.activeMap,
-				content: values.description,
+				content: values.name + ": " + values.description,
 				position: pos,
 				shadowStyle: settings.infoShadowStyle,padding: settings.infoPadding,backgroundColor: settings.infoBackgroundColor,borderRadius: settings.infoBorderRadius,arrowSize: settings.infoArrowSize,borderWidth: settings.infoBorderWidth,borderColor: settings.infoBorderColor,hideCloseButton: settings.infoHideCloseButton,arrowPosition: settings.infoArrowPosition,backgroundClassName: settings.infoBackgroundClassName,arrowStyle: settings.infoArrowStyle,disableAnimation:settings.infoDisableAnimation,disableAutoPan:settings.infoDisableAutoPan,
 				id:id
@@ -377,8 +380,13 @@ for more reference look at <a href="http://google-maps-utility-library-v3.google
 			imageSizes: [100,100],
 			averageCenter:true
 		}, cOptions);
-		settings.makerCluster = new MarkerClusterer(settings.activeMap,settings.markersList,clusterSettings);
+		settings.makerCluster = new MarkerClusterer(
+			settings.activeMap,
+			settings.markersList,
+			clusterSettings
+			);
 	}
+
 
 /**
 Loads Marker data into map. <br>
@@ -414,11 +422,38 @@ Be sure to create the icon types before loading.
 
 	]}
 **/
-	this.loadData = function(json){
+	this.loadData = function(json,checkForDoubles){
 		if(settings.debugMode){
 			console.log(json["data"]);
 		}
 		if(settings.markerTypes){
+			if(checkForDoubles){
+				// var listOfLat = [];
+				// for(var a = 0, max = json.data.length; a < max; a += 1){
+				// 	listOfLat.push(json.data[a].lat);
+				// }
+
+				//find all locations with same lat
+				var allMarks = [];
+				for(var a = 0, max = json.data.length; a < max; a += 1){
+					var total = 0;
+					var marks = [];
+					for(var b = 0; b < max; b += 1){
+						if(json.data[a].lat == json.data[b].lat){
+							if(a != b){
+								console.log(json.data[a].lat)
+							}
+							marks.push(json.data[b]);
+						}
+					}
+					if(marks.length > 1){
+						// allMarks.push(marks);
+						marks[1].scale = 5;
+						marks[1].strokeWeight = 5;
+					}
+				}
+				console.log(allMarks);
+			}
 			$.each(json["data"],function(index,value){
 				var values = $.extend({
 					lat:0,
@@ -426,7 +461,9 @@ Be sure to create the icon types before loading.
 					icon:0,
 					altIcon:0,
 					name:"no-name",
-					interAction:["click"]
+					interAction:["click"],
+					scale:1,
+					// strokeWeight:0
 				}, value );
 				makeMarker(values)
 				if(settings.debugMode){
