@@ -206,7 +206,7 @@ To start the map, should only be called once the map api has been loaded, which 
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
 			disableDefaultUI: true,
 			maxZoom:settings.maxZoom,
-			minZoom:settings.minZoom
+			minZoom:settings.minZoom,
 			zoomControl: settings.zoomControl,
 			zoomControlOptions: settings.zoomControlOptions
 		}
@@ -302,14 +302,18 @@ You can use origin on a sprite sheet to use one image for all your icons
 	}
 
 	function makeMarker(values){
+		console.log(values)
 		var id = settings.dataObjectList.length;
 		var pos = new google.maps.LatLng(values.lat,values.lon);
 
 		var icon = settings.markerTypes[values.icon];
-		var originalScale = icon.scale;
-		icon.scale = values.scale;
+		if(values.scale>1){
+			icon = Object.create(icon)
+			icon.scale = values.scale;
+		}
 		icon.strokeWeight = values.strokeWeight;
-		console.log(icon.scale);
+		icon.anchor = {x:(5.5) , y:(14.5)};
+
 
 		var marker =  new google.maps.Marker({
 			position: pos,
@@ -437,10 +441,6 @@ Be sure to create the icon types before loading.
 		}
 		if(settings.markerTypes){
 			if(checkForDoubles){
-				// var listOfLat = [];
-				// for(var a = 0, max = json.data.length; a < max; a += 1){
-				// 	listOfLat.push(json.data[a].lat);
-				// }
 
 				//find all locations with same lat
 				var allMarks = [];
@@ -448,7 +448,12 @@ Be sure to create the icon types before loading.
 					var total = 0;
 					var marks = [];
 					for(var b = 0; b < max; b += 1){
-						if(json.data[a].lat == json.data[b].lat){
+						var lat1 = json.data[a].lat,
+						lat2 = json.data[b].lat,
+						lon1 = json.data[a].lon,
+						lon2 = json.data[b].lon,
+						varience = 0.5;
+						if((lat1 == lat2 && lon1 == lon2) || (lat1 > lat2-varience && lat1 < lat2+varience && lon1 > lon2-varience && lon1 < lon2+varience )){
 							if(a != b){
 								console.log(json.data[a].lat)
 							}
@@ -457,11 +462,12 @@ Be sure to create the icon types before loading.
 					}
 					if(marks.length > 1){
 						// allMarks.push(marks);
-						marks[1].scale = 5;
-						marks[1].strokeWeight = 5;
+						marks[0].scale = 2;
+						marks[0].strokeWeight = 0.5;
+						marks[1].lat = marks[0].lat;
+						marks[1].lon = marks[0].lon;
 					}
 				}
-				console.log(allMarks);
 			}
 			$.each(json["data"],function(index,value){
 				var values = $.extend({
@@ -472,7 +478,6 @@ Be sure to create the icon types before loading.
 					name:"no-name",
 					interAction:["click"],
 					scale:1,
-					// strokeWeight:0
 				}, value );
 				makeMarker(values)
 				if(settings.debugMode){
