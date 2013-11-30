@@ -1,0 +1,28 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+@import "compass/reset";
+@import "base";
+@import "compass/css3/opacity";
+
+@include global-reset();
+
+#first-el{
+	@extend .transition-all-2;
+	width: 100px;
+	height: 100px;
+	background-color: #000;
+	@include breakpoint(huge) {
+		// background-color: #ff0;
+		@include opacity(0.6);
+	}
+	@include breakpoint(tablet) {
+		// background-color: #f0f;
+		@include opacity(0.4);
+	}
+	@include breakpoint(phone) {
+		// background-color: #0ff;
+		@include opacity(0.1);
+	}
+}
