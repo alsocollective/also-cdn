@@ -208,7 +208,7 @@ $.fn.Jtube = function( options ) {
 			stateChange({data:1});
 		}
 		if(settings.fallbackImage){
-			var element = settings.player.b.parentNode.parentNode;
+			var element = settings.player.d.parentNode.parentNode;
 			$(element).css({
 				backgroundPosition:"center",
 				backgroundSize:"cover",
@@ -356,12 +356,12 @@ $.fn.Jtube = function( options ) {
 				settings.pH = settings.winH;
 			}
 			if(settings.applyToContainer){
-				// console.log(settings.player.b.pa)
-				// $(settings.player.b.parentNode.parentNode).css({width:settings.winW,height:settings.winH-20});
-				$(settings.player.b.parentNode).css({width:Math.floor(settings.pW),height:Math.floor(settings.pH),left:Math.floor((settings.winW-settings.pW)/2),top:(settings.winH-settings.pH)/2,position:"absolute"});
-				$(settings.player.b).css({width:"100%",height:"100%"});
+				// console.log(settings.player.d.pa)
+				// $(settings.player.d.parentNode.parentNode).css({width:settings.winW,height:settings.winH-20});
+				$(settings.player.d.parentNode).css({width:Math.floor(settings.pW),height:Math.floor(settings.pH),left:Math.floor((settings.winW-settings.pW)/2),top:(settings.winH-settings.pH)/2,position:"absolute"});
+				$(settings.player.d).css({width:"100%",height:"100%"});
 			} else {
-				$(settings.player.b).css({width:Math.floor(settings.pW),height:Math.floor(settings.pH),left:Math.floor((settings.winW-settings.pW)/2),top:(settings.winH-settings.pH)/2,position:"absolute"});
+				$(settings.player.d).css({width:Math.floor(settings.pW),height:Math.floor(settings.pH),left:Math.floor((settings.winW-settings.pW)/2),top:(settings.winH-settings.pH)/2,position:"absolute"});
 			}
 		}
 	}
